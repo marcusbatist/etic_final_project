@@ -12,4 +12,4 @@ createsuperuser:
 	poetry run python3 manage.py createsuperuser
 
 startapp:
-	poetry run python3 manage.py startapp $(name)
+	poetry run python3 manage.py startapp storage
