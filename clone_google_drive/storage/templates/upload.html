@@ -12,31 +12,20 @@
     <h2>Pastas:</h2>
     {% if folder_id %}
         <a href="{% url 'upload_file_root' %}">Pasta Raiz</a> / 
-        {% for folder in path_list %}
+        {% for folder in child_folders %}
             <a href="{% url 'upload_file' folder.id %}">{{ folder.name }}</a> / 
         {% endfor %}
-        <strong>{{ folder.name }}</strong>
         
         <!-- Formulário de upload de arquivos -->
-    <form method="post" enctype="multipart/form-data" action="{% url 'upload_file' folder_id %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="hidden" name="folder_id" value="{{ folder_id }}">
-        <button type="submit">Upload</button>
-    </form>
+        <form method="post" enctype="multipart/form-data" action="{% url 'upload_file' folder_id %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="hidden" name="folder_id" value="{{ folder_id }}">
+            <button type="submit">Upload</button>
+        </form>
     {% else %}
         <a href="{% url 'upload_file_root' %}">Pasta Raiz</a>
     {% endif %}
-
-    
-
-    <!-- Lista de subpastas -->
-    <h2>Subpastas:</h2>
-    {% for subfolder in subfolders %}
-        <p><a href="{% url 'upload_file' subfolder.id %}">{{ subfolder.name }}</a></p>
-    {% empty %}
-        <p>Nenhuma subpasta encontrada.</p>
-    {% endfor %}
 
     <!-- Lista de arquivos na pasta atual -->
     <h2>Arquivos na Pasta:</h2>

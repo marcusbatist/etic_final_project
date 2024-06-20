@@ -1,3 +1,4 @@
+from typing import List
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
@@ -9,7 +10,7 @@ from django.contrib.auth import logout as auth_logout
 from django.conf import settings
 
 @login_required
-def upload_file(request, folder_id: int | None):
+def upload_file(request, folder_id: int | None = None):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
@@ -17,35 +18,49 @@ def upload_file(request, folder_id: int | None):
             instance.user = request.user  # Atribui o usuário autenticado ao campo 'user'
             
             if folder_id:
-                folder = get_object_or_404(Folder, id=folder_id)
-                instance.folder = folder  # Define a pasta onde o arquivo será salvo
+                this_folder = get_object_or_404(Folder, id=folder_id)
+                instance.folder = this_folder  # Define a pasta onde o arquivo será salvo
             instance.save()
 
-            # Cria a pasta se não existir
-            full_folder_path = os.path.join(settings.MEDIA_ROOT, str(folder_id))
-            os.makedirs(full_folder_path, exist_ok=True)
-           
-            return HttpResponseRedirect(reverse('upload_file', args=[folder_id]))  # Redireciona para a página de upload da pasta atual
+            if folder_id:
+                return HttpResponseRedirect(reverse('upload_file', args=[folder_id]))  # Redireciona para a página de upload da pasta atual
+
+            return HttpResponseRedirect(reverse('upload_file_root'))
+    
     else:
         form = UploadFileForm()
 
-    folder_user_files = ModelWithFileField.objects.filter(folder=folder_id, user=request.user)
-    path_list = []
-    if folder_id:
-        folder = get_object_or_404(Folder, id=folder_id)
-        while folder:
-            path_list.insert(0, folder)
-            folder = folder.parent  
+    # Coletar todos os arquivos do folder para o user
+    user = request.user
+    this_folder = Folder.objects.filter(
+        id=folder_id,
+    ).first()
 
-    subfolders = Folder.objects.filter(parent=folder_id)
+    files = ModelWithFileField.objects.filter(
+        user=user,
+        folder=this_folder,
+    )
+    
+    # Coletar todos os folders do folder para o user
+    child_folders = Folder.objects.filter(
+        parent=this_folder
+    )
 
-    return render(request, 'upload.html', {
-        'form': form,
-        'folder_id': folder_id,
-        'files': folder_user_files,
-        'path_list': path_list,
-        'subfolders': subfolders,
-    })
+    # Template upload.html precisa de user, folder_id, child_folders, form, files
+    return render(
+        request=request,
+        template_name="upload.html",
+        context={
+            "user": user, 
+            "folder_id": folder_id, 
+            "child_folders": child_folders, 
+            "form": form,
+            "files": files,
+        }
+    )
+
+
+    
 
 @login_required
 def download_file(request, file_id):

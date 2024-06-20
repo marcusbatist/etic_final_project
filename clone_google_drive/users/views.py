@@ -31,7 +31,7 @@ def login_view(request):
 
         if user:
             login(request, user)
-            return redirect(reverse('upload_file'))  # Redireciona para a página de upload
+            return redirect(reverse('upload_file_root'))  # Redireciona para a página de upload
             
         return HttpResponse('Email ou Password estão inválidos, por favor tente novamente! Obrigado!')
     return render(request, 'login.html')
