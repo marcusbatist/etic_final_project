@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload File</title>
+</head>
+<body>
+    <h1>Upload File</h1>
+    <p>Bem-vindo, {{ user.username }}!</p>
+    <a href="{% url 'logout' %}">Logout</a>
+    
+    <!-- Exibe a navegação entre pastas -->
+    <h2>Pastas:</h2>
+    {% if folder_id %}
+        <a href="{% url 'upload_file_root' %}">Pasta Raiz</a> / 
+        {% for folder in path_list %}
+            <a href="{% url 'upload_file' folder.id %}">{{ folder.name }}</a> / 
+        {% endfor %}
+        <strong>{{ folder.name }}</strong>
+    {% else %}
+        <a href="{% url 'upload_file_root' %}">Pasta Raiz</a>
+    {% endif %}
+
+    <!-- Formulário de upload de arquivos -->
+    <form method="post" enctype="multipart/form-data" action="{% url 'upload_file' folder_id %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="hidden" name="folder_id" value="{{ folder_id }}">
+        <button type="submit">Upload</button>
+    </form>
+
+    <!-- Lista de subpastas -->
+    <h2>Subpastas:</h2>
+    {% for subfolder in subfolders %}
+        <p><a href="{% url 'upload_file' subfolder.id %}">{{ subfolder.name }}</a></p>
+    {% empty %}
+        <p>Nenhuma subpasta encontrada.</p>
+    {% endfor %}
+
+    <!-- Lista de arquivos na pasta atual -->
+    <h2>Arquivos na Pasta:</h2>
+    {% for file_instance in files %}
+        <p>{{ file_instance.file_field.name }} - Data de Upload: {{ file_instance.created_at }}</p>
+    {% empty %}
+        <p>Nenhum arquivo encontrado nesta pasta.</p>
+    {% endfor %}
+</body>
+</html>
