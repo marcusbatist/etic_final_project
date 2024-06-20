@@ -16,17 +16,19 @@
             <a href="{% url 'upload_file' folder.id %}">{{ folder.name }}</a> / 
         {% endfor %}
         <strong>{{ folder.name }}</strong>
-    {% else %}
-        <a href="{% url 'upload_file_root' %}">Pasta Raiz</a>
-    {% endif %}
-
-    <!-- Formulário de upload de arquivos -->
+        
+        <!-- Formulário de upload de arquivos -->
     <form method="post" enctype="multipart/form-data" action="{% url 'upload_file' folder_id %}">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="hidden" name="folder_id" value="{{ folder_id }}">
         <button type="submit">Upload</button>
     </form>
+    {% else %}
+        <a href="{% url 'upload_file_root' %}">Pasta Raiz</a>
+    {% endif %}
+
+    
 
     <!-- Lista de subpastas -->
     <h2>Subpastas:</h2>

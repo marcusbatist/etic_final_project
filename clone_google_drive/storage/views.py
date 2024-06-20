@@ -9,7 +9,7 @@ from django.contrib.auth import logout as auth_logout
 from django.conf import settings
 
 @login_required
-def upload_file(request, folder_id=None):
+def upload_file(request, folder_id: int | None):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
