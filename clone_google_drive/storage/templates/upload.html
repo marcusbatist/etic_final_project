@@ -19,8 +19,8 @@
         <!-- Formulário de upload de arquivos -->
         <form method="post" enctype="multipart/form-data" action="{% url 'upload_file' folder_id %}">
             {% csrf_token %}
-            {{ form.as_p }}
-            <input type="hidden" name="folder_id" value="{{ folder_id }}">
+            {{ form }}
+            <input type="file" name="folder_id" value="{{ folder_id }}">
             <button type="submit">Upload</button>
         </form>
     {% else %}

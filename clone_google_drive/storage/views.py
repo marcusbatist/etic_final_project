@@ -27,7 +27,7 @@ def upload_file(request, folder_id: int | None = None):
 
             return HttpResponseRedirect(reverse('upload_file_root'))
     
-    else:
+    elif request.method == 'GET':
         form = UploadFileForm()
 
     # Coletar todos os arquivos do folder para o user
